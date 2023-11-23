@@ -1,3 +1,21 @@
+// .eslintrc
 {
-  "extends": "next/core-web-vitals"
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "./tsconfig.eslint.json"
+  },
+  "plugins": ["prettier", "@typescript-eslint"],
+  "extends": ["next/core-web-vitals", "airbnb-typescript", "prettier"],
+  "ignorePatterns": ["tailwind.config.js"],
+  "rules": {
+    "@typescript-eslint/no-unused-vars": "error",
+    // to enforce using type for object type definitions, can be type or interface 
+    "@typescript-eslint/consistent-type-definitions": ["error", "type"],
+    "prettier/prettier": "error"
+  },
+
+  "env": {
+    "browser": true,
+    "es2021": true
+  }
 }
