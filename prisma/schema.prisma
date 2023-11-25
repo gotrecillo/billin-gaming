@@ -1,0 +1,56 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider          = "postgresql"
+  url               = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl         = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+  shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING") // used for migrations
+}
+
+model User {
+  id        String     @id @default(uuid())
+  email     String?
+  name      String?
+  image     String?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  RoomUser  RoomUser[]
+}
+
+model ShittyQuestion {
+  id        String   @id @default(uuid())
+  question  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum GameEnum {
+  SHITTY_QUESTIONS
+}
+
+model Room {
+  id        String     @id @unique @default(uuid())
+  name      String
+  game      GameEnum   @default(SHITTY_QUESTIONS)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  archived  Boolean    @default(false)
+  RoomUser  RoomUser[]
+}
+
+model RoomUser {
+  id        String   @id @default(uuid())
+  room      Room     @relation(fields: [roomId], references: [id])
+  roomId    String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// i want to add a score to the user playing a game
