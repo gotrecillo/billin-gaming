@@ -1,6 +1,6 @@
 import prisma from '@/lib/prisma';
 
-import RoomListItem from '../Room';
+import RoomListItem from '../components/Room';
 export default async function ArchivedRoomsPage() {
   const rooms = await prisma.room.findMany({
     where: {

@@ -1,9 +1,9 @@
 import { Button, Link } from '@nextui-org/react';
 import { Room } from '@prisma/client';
 
-import { deleteRoom } from './delete-room-action';
-import { archiveRoom } from './archive-room-action';
-import { restoreRoom } from './restore-room-action';
+import { deleteRoom } from '../server-actions/delete-room-action';
+import { archiveRoom } from '../server-actions/archive-room-action';
+import { restoreRoom } from '../server-actions/restore-room-action';
 
 type RoomListItemProps = {
   room: Room;

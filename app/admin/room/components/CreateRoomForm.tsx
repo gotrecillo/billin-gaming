@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Input } from '@nextui-org/react';
 import SubmitButton from '@/components/SubmitButton';
 import { RoomSchema } from '@/lib/types';
-import { createRoom } from './create-room-action';
+import { createRoom } from '../server-actions/create-room-action';
 
 export default function CreateRoomForm() {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});

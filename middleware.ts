@@ -1,7 +1,7 @@
 import { getToken } from 'next-auth/jwt';
 import { NextRequest, NextResponse } from 'next/server';
 
-const protectedRoutes = [/^\/$/];
+const protectedRoutes = [/^\/$/, /^\/room\/*/];
 export default async function middleware(req: NextRequest) {
   // Get the pathname of the request (e.g. /, /auth/signin)
   const path = req.nextUrl.pathname;

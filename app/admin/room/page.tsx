@@ -1,5 +1,5 @@
-import CreateRoomForm from './CreateRoomForm';
-import RoomList from './RoomList';
+import CreateRoomForm from './components/CreateRoomForm';
+import RoomList from './components/RoomList';
 import prisma from '@/lib/prisma';
 
 export default async function RoomCreatePage() {

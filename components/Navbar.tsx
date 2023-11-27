@@ -16,7 +16,7 @@ export default function Navbar() {
   }
 
   return (
-    <div className="bg-gray-100 flex flex-row justify-between py-3">
+    <nav className="bg-gray-100 flex flex-row justify-between py-3">
       <Button as={Link} href="/" className="bg-transparent">
         <Image
           src="/logo-web-billin.png"
@@ -51,6 +51,6 @@ export default function Navbar() {
           </g>
         </svg>
       </Button>
-    </div>
+    </nav>
   );
 }

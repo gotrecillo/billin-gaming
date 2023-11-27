@@ -1,11 +1,14 @@
 'use server';
 
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import prisma from '@/lib/prisma';
 import { RoomSchema } from '@/lib/types';
+import { getServerSession } from 'next-auth';
 import { revalidatePath } from 'next/cache';
 
 export const createRoom = async (newRoom: unknown) => {
   const result = RoomSchema.safeParse(newRoom);
+  const session = await getServerSession(authOptions);
 
   if (!result.success) {
     let errorMessages = '';
@@ -21,6 +24,7 @@ export const createRoom = async (newRoom: unknown) => {
     const room = await prisma.room.create({
       data: {
         name: result.data.name,
+        ownerId: session?.user.id || '',
       },
     });
     revalidatePath('/');

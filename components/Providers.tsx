@@ -3,8 +3,9 @@ import { NextUIProvider } from '@nextui-org/react';
 import { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import Navbar from './Navbar';
 export { SessionProvider } from 'next-auth/react';
+
+import Navbar from './Navbar';
 
 export function Providers({
   children,
@@ -14,11 +15,16 @@ export function Providers({
   session: Session | null;
 }) {
   const router = useRouter();
+  if (!session) {
+    return <>{children}</>;
+  }
 
   return (
     <SessionProvider session={session}>
-      <Navbar />
-      <NextUIProvider navigate={router.push}>{children}</NextUIProvider>
+      <NextUIProvider navigate={router.push}>
+        <Navbar />
+        {children}
+      </NextUIProvider>
     </SessionProvider>
   );
 }
