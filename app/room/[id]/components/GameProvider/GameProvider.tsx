@@ -1,12 +1,14 @@
 'use client';
 import { createContext, useState } from 'react';
-import { User } from '@prisma/client';
+import { ShittyQuestion, User } from '@prisma/client';
 
 import { setActivePlayer as setActivePlayerInServer } from '../../server-actions/set-active-player';
 import { setPlayersAnswers } from '../../server-actions/set-players-answers';
 import { incrementPlayersScore } from '../../server-actions/increment-players-score';
+import { resetScore } from '../../server-actions/reset-score';
 import { useSincronizeWithPusher } from './useSincronizeWithPusher';
 import { useIncrementScores } from './useIncrementScores';
+import { setActiveCard } from '../../server-actions/set-active-card';
 import { useVote } from './useVote';
 
 type GameProviderProps = {
@@ -20,6 +22,7 @@ type GameProviderProps = {
     score: number;
   }[];
   children: React.ReactNode;
+  cards: { ShittyQuestions: ShittyQuestion[] }[];
 };
 
 type GameContextValues = {
@@ -40,6 +43,11 @@ type GameContextValues = {
   isActive: boolean;
   hasOwnerRights: boolean;
   showSubmitButtons: boolean;
+  resetGame: () => void;
+  card: { ShittyQuestions: ShittyQuestion[] };
+  cardsCount: number;
+  activeCardIndex: number;
+  setActiveCardIndex: (newActiveCardIndex: number) => void;
 };
 
 // create game provider context
@@ -55,6 +63,11 @@ export const GameContext = createContext<GameContextValues>({
   showSubmitButtons: false,
   setActivePlayer: () => {},
   sendResults: () => {},
+  resetGame: () => {},
+  card: { ShittyQuestions: [] as ShittyQuestion[] },
+  cardsCount: 0,
+  activeCardIndex: 0,
+  setActiveCardIndex: () => {},
 });
 
 export default function GameProvider(props: GameProviderProps) {
@@ -65,34 +78,55 @@ export default function GameProvider(props: GameProviderProps) {
     roomId,
     initialActivePlayer,
     hasOwnerRights,
+    cards,
   } = props;
   const [score, setScore] = useState(initialScore);
+  const [activeCardIndex, setActiveCardIndexState] = useState(0);
   const [voteState, setVoteState] = useState<{
     pooedPlayers: string[];
     bulbedPlayers: string[];
   }>({ pooedPlayers: [], bulbedPlayers: [] });
 
+  const setActiveCardIndex = (newActiveCardIndex: number) => {
+    let newIndex = newActiveCardIndex;
+    if (newIndex < 0) {
+      newIndex = cards.length - 1;
+    }
+    if (newIndex > cards.length - 1) {
+      newIndex = 0;
+    }
+    setActiveCard(roomId, newIndex);
+  };
+
   const [activePlayer, setActivePlayerState] =
     useState<string>(initialActivePlayer);
 
-  const resetGame = () => {
+  const resetVotes = () => {
     setVoteState({ pooedPlayers: [], bulbedPlayers: [] });
   };
 
+  const resetGame = () => {
+    resetScore(roomId);
+  };
+
   const incrementScores = useIncrementScores({
-    resetGame,
+    resetVotes,
     score,
     setActivePlayerState,
     setScore,
     voteState,
   });
 
+  const resetScores = () => setScore([]);
+
   useSincronizeWithPusher({
+    setActiveCardIndex: setActiveCardIndexState,
     roomId,
     setVoteState,
     setActivePlayerState,
     incrementScores,
-    resetGame,
+    resetVotes,
+    resetScores,
   });
 
   const isActive = playerId === activePlayer;
@@ -112,6 +146,7 @@ export default function GameProvider(props: GameProviderProps) {
     const chosenPlayers =
       winners === 'poo' ? voteState.pooedPlayers : voteState.bulbedPlayers;
     incrementPlayersScore(roomId, chosenPlayers, winners);
+    setActiveCardIndex(activeCardIndex + 1);
   };
 
   const setActivePlayer = (newActivePlayerId: string) => {
@@ -131,6 +166,11 @@ export default function GameProvider(props: GameProviderProps) {
     showSubmitButtons,
     sendResults,
     setActivePlayer,
+    resetGame,
+    card: cards[activeCardIndex],
+    cardsCount: cards.length,
+    activeCardIndex,
+    setActiveCardIndex,
   };
 
   return (

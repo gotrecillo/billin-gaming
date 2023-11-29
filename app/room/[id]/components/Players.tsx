@@ -5,6 +5,8 @@ import { Avatar, Button } from '@nextui-org/react';
 import classNames from 'classnames';
 import { useContext } from 'react';
 import { GameContext } from './GameProvider/GameProvider';
+import IconStar from '@/components/icons/IconStar';
+import ShittyQuestion from './ShittyQuestion';
 
 export default function Players() {
   const {
@@ -19,6 +21,11 @@ export default function Players() {
     setActivePlayer,
     sendResults,
     showSubmitButtons,
+    resetGame,
+    card,
+    activeCardIndex,
+    cardsCount,
+    setActiveCardIndex,
   } = useContext(GameContext);
   return (
     <>
@@ -32,18 +39,29 @@ export default function Players() {
             <div
               key={player.id}
               className={classNames(
-                'border-2  rounded-lg bg-slate-50 p-4 items-center break-words grid gap-2 grid-cols-[auto_1fr_auto]',
+                'border-2  rounded-lg bg-slate-50 p-4 items-center break-words grid gap-2 grid-cols-[auto_1fr_auto] grid-rows-[1fr_auto_auto]',
                 {
                   ['border-slate-700']: player.id !== activePlayer,
                   ['border-lime-600']: player.id === activePlayer,
                 }
               )}
             >
-              <Avatar src={player.image ?? ''} />
+              {/* Make a rating system with a maximum of 6 poo emojis that fills depending on the player score */}
+              <ul className="flex flex-wrap col-span-3">
+                {Array.from({ length: playerScore || 0}, (_, i) => (
+                  <li key={i}>
+                    <IconStar
+                      className='w-6 h-6 fill-yellow-300'
+                    />
+                  </li>
+                ))}
+              </ul>
+
+              <Avatar src={player.image!} name={player.name!} showFallback />
               <p className="text-slate-900 text-ellipsis">
                 {player.name?.split(' ')[0]}
               </p>
-              {isActive && player.id !== playerId ? (
+              {isActive && player.id !== playerId && (
                 <div className="grid grid-cols-2 items-center gap-2">
                   <button
                     onClick={() => vote('poo', player.id, isPooed)}
@@ -66,8 +84,6 @@ export default function Players() {
                     <IconBulb className="w-9 h-9" />
                   </button>
                 </div>
-              ) : (
-                <p className="text-slate-900">{playerScore ?? 0}</p>
               )}
 
               {hasOwnerRights && (
@@ -84,30 +100,69 @@ export default function Players() {
         })}
       </section>
       {hasOwnerRights && (
-        <section className="grid grid-cols-2 w-full">
-          {showSubmitButtons ? (
-            <>
-              <Button
-                onClick={() => sendResults('poo')}
-                className="mr-2 bg-white border-2 border-yellow-700 fit-content"
-                endContent={<IconPoo className="w-8 h-8" />}
-              >
-                Ganan los mierdosos
-              </Button>
-              <Button
-                onClick={() => sendResults('bulb')}
-                className="bg-white border-2 border-yellow-300 fit-content"
-                endContent={<IconBulb className="w-8 h-8" />}
-              >
-                Ganan los ingeniosos
-              </Button>
-            </>
-          ) : (
-            <h2>
-              {voteState.bulbedPlayers.length + voteState.pooedPlayers.length} /{' '}
-              {players.length - 1}
-            </h2>
-          )}
+        <>
+          <section className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4 items-center">
+            <Button
+              className="bg-white border-2 border-slate-700"
+              onClick={() => setActiveCardIndex(activeCardIndex - 1)}
+            >
+              Carta anterior
+            </Button>
+            <h2 className="text-center">{`${
+              activeCardIndex + 1
+            } / ${cardsCount}`}</h2>
+            <Button
+              className="bg-white border-2 border-slate-700"
+              onClick={() => setActiveCardIndex(activeCardIndex + 1)}
+            >
+              Carta siguiente
+            </Button>
+          </section>
+          <section className="grid grid-cols-2 w-full mb-4 items-center">
+            {showSubmitButtons ? (
+              <>
+                <Button
+                  onClick={() => sendResults('poo')}
+                  className="mr-2 bg-white border-2 border-yellow-700 fit-content"
+                  endContent={<IconPoo className="w-8 h-8" />}
+                >
+                  Ganan los mierdosos
+                </Button>
+                <Button
+                  onClick={() => sendResults('bulb')}
+                  className="bg-white border-2 border-yellow-300 fit-content"
+                  endContent={<IconBulb className="w-8 h-8" />}
+                >
+                  Ganan los ingeniosos
+                </Button>
+              </>
+            ) : (
+              <>
+                <h2>
+                  {voteState.bulbedPlayers.length +
+                    voteState.pooedPlayers.length}{' '}
+                  / {players.length - 1} votos
+                </h2>
+                <Button
+                  className="bg-white border-2 border-slate-700"
+                  onClick={resetGame}
+                >
+                  Reset
+                </Button>
+              </>
+            )}
+          </section>
+        </>
+      )}
+      {isActive && (
+        <section className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+          {card?.ShittyQuestions.map((question) => (
+            <ShittyQuestion
+              key={question.id}
+              question={question.question!}
+              category={question.category}
+            />
+          ))}
         </section>
       )}
     </>

@@ -22,13 +22,33 @@ model User {
   RoomUser  RoomUser[]
   Room      Room[]
   Score     Score[]
+  godMode   Boolean    @default(false)
+}
+
+model Card {
+  id              String           @id @default(uuid())
+  ShittyQuestions ShittyQuestion[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 }
 
 model ShittyQuestion {
-  id        String   @id @default(uuid())
+  id        String                 @id @default(uuid())
   question  String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime               @default(now())
+  updatedAt DateTime               @updatedAt
+  Card      Card?                  @relation(fields: [cardId], references: [id])
+  cardId    String?
+  category  ShittyQuestionCategory
+}
+
+enum ShittyQuestionCategory {
+  HEART
+  CROWN
+  MEGAPHONE
+  COFFEE
+  BED
+  PICTURE
 }
 
 enum GameEnum {

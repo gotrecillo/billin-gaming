@@ -1,12 +1,13 @@
 type UseIncrementScoresProps = {
   setScore: (score: { userId: string; score: number }[]) => void;
   setActivePlayerState: (userId: string) => void;
-  resetGame: () => void;
+  resetVotes: () => void;
   score: { userId: string; score: number }[];
   voteState: { pooedPlayers: string[]; bulbedPlayers: string[] };
 };
 export const useIncrementScores = (props: UseIncrementScoresProps) => {
-  const { setScore, setActivePlayerState, resetGame, score, voteState } = props;
+  const { setScore, setActivePlayerState, resetVotes, score, voteState } =
+    props;
 
   return (winners: 'poo' | 'bulb') => {
     const chosenPlayers =
@@ -23,6 +24,6 @@ export const useIncrementScores = (props: UseIncrementScoresProps) => {
     });
     setScore(temporalScore);
     setActivePlayerState('');
-    resetGame();
+    resetVotes();
   };
 };

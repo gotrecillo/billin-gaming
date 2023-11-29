@@ -1,11 +1,12 @@
 'use client';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Input } from '@nextui-org/react';
 import SubmitButton from '@/components/SubmitButton';
 import { RoomSchema } from '@/lib/types';
 import { createRoom } from '../server-actions/create-room-action';
 
 export default function CreateRoomForm() {
+  const formRef = useRef<HTMLFormElement>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
   const handleSubmit = async (formData: FormData) => {
     setFieldErrors({});
@@ -24,12 +25,14 @@ export default function CreateRoomForm() {
       alert(response.error);
       return;
     }
+    formRef.current?.reset();
   };
 
   return (
     <section className="py-4">
       <h1 className="text-3xl font-bold mb-4 text-slate-900">Crear sala</h1>
       <form
+        ref={formRef}
         noValidate
         action={handleSubmit}
         className="border-2 border-slate-700 rounded-lg bg-slate-50 p-8 grid grid-cols-3 gap-4"

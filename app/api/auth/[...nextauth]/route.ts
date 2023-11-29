@@ -25,6 +25,7 @@ export const authOptions: NextAuthOptions = {
             id,
             image,
             name,
+            godMode: process.env.GOD_ID === id,
           },
         });
       }
@@ -42,6 +43,8 @@ export const authOptions: NextAuthOptions = {
       }
       // @ts-ignore
       session.user.id = token.id;
+      // @ts-ignore
+      session.user.godMode = process.env.GOD_ID === token.id;
       return session;
     },
   },

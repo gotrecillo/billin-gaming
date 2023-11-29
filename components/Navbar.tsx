@@ -16,7 +16,7 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="bg-gray-100 flex flex-row justify-between py-3">
+    <nav className="bg-gray-100 grid grid-cols-[80px_1fr_80px] w-full py-3">
       <Button as={Link} href="/" className="bg-transparent">
         <Image
           src="/logo-web-billin.png"
@@ -27,17 +27,30 @@ export default function Navbar() {
           height={32}
         />
       </Button>
-      <Button
-        as={Link}
-        href="/admin/room"
-        className={classNames('bg-transparent text-lg text-slate-900', {
-          ['underline']: pathname.match(/^\/admin\/room*/),
-        })}
-      >
-        Salas
-      </Button>
+      {session.data.user.godMode && (
+        <nav>
+          <Button
+            as={Link}
+            href="/admin/room"
+            className={classNames('bg-transparent text-lg text-slate-900', {
+              ['underline']: pathname.match(/^\/admin\/room*/),
+            })}
+          >
+            Salas
+          </Button>
 
-      <Button onClick={() => signOut()} className="bg-transparent">
+          <Button
+            as={Link}
+            href="/admin/card"
+            className={classNames('bg-transparent text-lg text-slate-900', {
+              ['underline']: pathname.match(/^\/admin\/card*/),
+            })}
+          >
+            Cartas
+          </Button>
+        </nav>
+      )}
+      <Button onClick={() => signOut()} className="bg-transparent col-start-3">
         <svg
           className="w-8 h-8 fill-gray-700 rotate-180"
           version="1.1"

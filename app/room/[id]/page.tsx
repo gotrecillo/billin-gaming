@@ -5,6 +5,9 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import GameProvider from './components/GameProvider/GameProvider';
 
+
+export const dynamic = 'force-dynamic';
+
 type RoomPageProps = {
   params: {
     id: string;
@@ -29,6 +32,12 @@ export default async function RoomPage(props: RoomPageProps) {
     },
   });
 
+  const cards = await prisma.card.findMany({
+    include: {
+      ShittyQuestions: true,
+    },
+  });
+
   if (!room) {
     notFound();
   }
@@ -45,6 +54,7 @@ export default async function RoomPage(props: RoomPageProps) {
         initialActivePlayer={
           room.RoomUser.find((xs) => xs.active)?.userId || ''
         }
+        cards={cards}
       >
         <Players />
       </GameProvider>
